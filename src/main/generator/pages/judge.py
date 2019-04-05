@@ -21,7 +21,8 @@ icons = {
     "presentation_error": "times",
     "extra_output": "times",
     "incomplete_output": "times",
-    "pending": "sync"
+    "pending": "sync",
+    "reject" : "times",
 }
 verdict_name = {
     "ok": "Accepted",
@@ -31,7 +32,8 @@ verdict_name = {
     "presentation_error": "Presentation Error",
     "extra_output": "Extra Output",
     "incomplete_output": "Incomplete Output",
-    "pending": "Pending..."
+    "pending": "Pending...",
+    "reject" : "Reject",
 }
 
 def resultOptions(result):

@@ -165,6 +165,7 @@ Problem page
         "runtime_error": "exclamation-triangle",
         "extra_output": "times",
         "incomplete_output": "times",
+        "reject" : "times",
     };
     var verdict_name = {
         "ok": "Accepted",
@@ -173,6 +174,7 @@ Problem page
         "runtime_error": "Runtime Error",
         "extra_output": "Extra Output",
         "incomplete_output": "Incomplete Output",
+        "reject" : "times",
     };
 
     function showResults(sub) {
