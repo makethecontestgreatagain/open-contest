@@ -20,6 +20,7 @@ icons = {
     "runtime_error": "exclamation-triangle",
     "presentation_error": "times",
     "extra_output": "times",
+    "incomplete_output": "times",
     "pending": "sync"
 }
 verdict_name = {
@@ -29,6 +30,7 @@ verdict_name = {
     "runtime_error": "Runtime Error",
     "presentation_error": "Presentation Error",
     "extra_output": "Extra Output",
+    "incomplete_output": "Incomplete Output",
     "pending": "Pending..."
 }
 

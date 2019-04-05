@@ -78,8 +78,15 @@ def runCode(sub):
         answers.append(sub.problem.testData[i].output)
         
         res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
-        if res == "ok" and strip((answers[-1] or "").rstrip()) != strip((outputs[-1] or "").rstrip()):
-            res = "wrong_answer"
+        stripOutput = strip((outputs[-1] or "").rstrip())
+        stripAnswers = strip((answers[-1] or "").rstrip())
+        if res == "ok" and stripAnswers != stripOutput:
+            if len(stripAnswers) > len(stripOutput) and stripAnswers.startswith(stripOutput):
+                res = "incomplete_output"
+            elif len(stripAnswers) < len(stripOutput) and stripOutput.startswith(stripAnswers):
+                res = "extra_output"
+            else:
+                res = "wrong_answer"
         if res == None:
             res = "tle"
         results.append(res)
