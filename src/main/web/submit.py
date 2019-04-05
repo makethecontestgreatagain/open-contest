@@ -80,10 +80,12 @@ def runCode(sub):
         res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
         stripOutput = strip((outputs[-1] or "").rstrip())
         stripAnswers = strip((answers[-1] or "").rstrip())
+        extraRE = re.sub(r"\n", r"\n(?:[^\n]*\n)?", stripAnswers) + r".*"
+        incompleteRE = "(?:" + re.sub(r"\n", r"\n)?(", stripAnswers) + ")?"
         if res == "ok" and stripAnswers != stripOutput:
-            if len(stripAnswers) > len(stripOutput) and stripAnswers.startswith(stripOutput):
+            if re.fullmatch(incompleteRE, stripOutput, re.DOTALL) or stripAnswers.startswith(stripOutput):
                 res = "incomplete_output"
-            elif len(stripAnswers) < len(stripOutput) and stripOutput.startswith(stripAnswers):
+            elif re.fullmatch(extraRE, stripOutput, re.DOTALL):
                 res = "extra_output"
             else:
                 res = "wrong_answer"
