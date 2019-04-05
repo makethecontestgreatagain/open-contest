@@ -174,7 +174,7 @@ Problem page
         "runtime_error": "Runtime Error",
         "extra_output": "Extra Output",
         "incomplete_output": "Incomplete Output",
-        "reject" : "times",
+        "reject" : "Rejected",
     };
 
     function showResults(sub) {
