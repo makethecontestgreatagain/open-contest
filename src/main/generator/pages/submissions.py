@@ -2,6 +2,7 @@ from code.util.db import Submission
 from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
 from code.util import register
+from code.generator.pages.judge import verdict_name
 import logging
 
 class SubmissionDisplay(UIElement):
@@ -12,7 +13,7 @@ class SubmissionDisplay(UIElement):
         self.html = Card("Submission to {} at <span class='time-format'>{}</span>".format(probName, subTime), [
             h.strong("Language: <span class='language-format'>{}</span>".format(submission.language)),
             h.br(),
-            h.strong("Result: <span class='result-format'>{}</span>".format(submission.result)),
+            h.strong("Result: <span class='result-format'>{}</span>".format(verdict_name[submission.getContestantResult()])),
             h.br(),
             h.br(),
             h.strong("Code:"),
