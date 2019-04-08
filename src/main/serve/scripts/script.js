@@ -602,8 +602,9 @@ General
 --------------------------------------------------------------------------------------------------*/
     async function fixFormatting() {
         $(".time-format").each((_, span) => {
-            var timestamp = $(span).text();
+            var timestamp = $(span).attr("data_timestamp"); // TODO timestamp is not an int, so d is the default date, so all submissions' dates get squashed and reset!
             var d = new Date(parseInt(timestamp));
+            // var d = new Date(timestamp);
             $(span).text(d.toLocaleString());
         });
         await getLanguages();
