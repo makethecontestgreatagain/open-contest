@@ -36,6 +36,7 @@ class Problem:
             self.constraints = details["constraints"]
             self.samples     = int(details["samples"])
             self.tests       = int(details["tests"])
+            self.timeLimit   = int(details["timeLimit"])
             self.sampleData  = [Datum.get(id, i) for i in range(self.samples)]
             self.testData    = [Datum.get(id, i) for i in range(self.tests)]
         else:
@@ -48,6 +49,7 @@ class Problem:
             self.constraints = None
             self.samples     = 0
             self.tests       = 0
+            self.timeLimit   = 5
             self.sampleData  = []
             self.testData    = []
 
@@ -68,6 +70,7 @@ class Problem:
             "constraints": self.constraints,
             "samples":     self.samples,
             "tests":       self.tests,
+            "timeLimit":   self.timeLimit,
         }
 
     def save(self):
