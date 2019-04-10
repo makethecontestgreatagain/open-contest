@@ -25,10 +25,12 @@ General page code
         });
     }
 
+    var userLastLogin = 0;
     var userType = "";
     var user = "";
     function setupMenu() {
         if (document.cookie) {
+            userLoginTime = Number(readCookie("userLoginTime"));
             userType = readCookie("userType");
             user = readCookie("user");
         }
@@ -653,7 +655,13 @@ Messages Page
         $.post("/getMessages", {timestamp: lastChecked}, messages => {
             lastChecked = messages.timestamp
             for (message of messages.messages) {
-                if (message.id in seenMessages || message.from.id == user) {
+
+
+                console.log(message.timestamp);
+                console.log(userLoginTime);
+                
+                
+                if (message.id in seenMessages || message.from.id == user || message.timestamp < userLoginTime) {
                     continue;
                 }
                 showIncomingMessage(message);
