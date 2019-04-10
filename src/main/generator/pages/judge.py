@@ -54,6 +54,26 @@ class TestCaseTab(UIElement):
 class TestCaseData(UIElement):
     def __init__(self, x, sub):
         num, input, output, error, answer = x
+
+        # create the diff
+        output, answer = output.split("\n"), answer.split("\n")
+        out, ans = [], []
+        for i in range(min(len(output), len(answer))):
+            if output[i] == answer[i]:
+                out.append(h.span(output[i]))
+                ans.append(h.span(answer[i]))
+            else:
+                out.append(h.span(output[i], style="background-color:lightcoral;"))
+                ans.append(h.span(answer[i], style="background-color:palegreen;"))
+        if (len(output) < len(answer)):
+            for i in range(len(output), len(answer) - 1, 1):
+                ans.append(h.span(answer[i], style="background-color:palegreen;"))
+                out.append(h.span(" ", style="background-color:lightcoral;"))
+        else:
+            for i in range(len(answer), len(output) - 1, 1):
+                out.append(h.span(output[i], style="background-color:lightcoral;"))
+                ans.append(h.span(" ", style="background-color:palegreen;"))
+
         self.html = div(id=f"tabs-{sub.id}-{num}", contents=[
             div(cls="row", contents=[
                 div(cls="col-12", contents=[
@@ -61,14 +81,20 @@ class TestCaseData(UIElement):
                     h.code(input.replace(" ", "&nbsp;").replace("\n", "<br/>"))
                 ])
             ]),
+            #div(cls="row", contents=[
+            #    div(cls="col-12", contents=[
+            #        h.h4("Diff"),
+            #        h.code(d.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+            #    ])
+            #]),
             div(cls="row", contents=[
                 div(cls="col-6", contents=[
                     h.h4("Output"),
-                    h.code(output.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+                    h.code("\n".join(out).replace(" ", "&nbsp;").replace("\n", "<br/>"))
                 ]),
                 div(cls="col-6", contents=[
                     h.h4("Correct Answer"),
-                    h.code(answer.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+                    h.code("\n".join(ans).replace(" ", "&nbsp;").replace("\n", "<br/>"))
                 ])
             ])
         ])
