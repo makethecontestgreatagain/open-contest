@@ -655,12 +655,6 @@ Messages Page
         $.post("/getMessages", {timestamp: lastChecked}, messages => {
             lastChecked = messages.timestamp
             for (message of messages.messages) {
-
-
-                console.log(message.timestamp);
-                console.log(userLoginTime);
-                
-                
                 if (message.id in seenMessages || message.from.id == user || message.timestamp < userLoginTime) {
                     continue;
                 }
