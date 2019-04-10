@@ -545,6 +545,7 @@ Problem page
         problem.output      = mdEditors[2].value();
         problem.constraints = mdEditors[3].value();
         problem.samples     = $("#problem-samples").val();
+        problem.timeLimit   = $("#problem-time-limit").val();
         testData = [];
         $(".test-data-cards .card").each((_, card) => {
             var input = $(card).find("code:eq(0)").html().replace(/<br>/g, "\n").replace(/<br\/>/g, "\n").replace(/&nbsp;/g, " ");
@@ -556,6 +557,11 @@ Problem page
         }
         problem.testData = JSON.stringify(testData);
         
+        if (problem.timeLimit < 1) {
+            alert("Time limit must be a positive non-zero integer.");
+            return;
+        }
+
         if (problem.samples > testData.length) {
             alert("You have set the number of samples beyond the number of tests available.");
             return;
