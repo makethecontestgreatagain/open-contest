@@ -8,7 +8,6 @@ import re
 from uuid import uuid4
 
 MAX_OUTPUT_LENGTH = 10
-MAX_OUTPUT_DISPLAY_LENGTH = 5
 
 def addSubmission(probId, lang, code, user, type):
     sub = Submission()
@@ -87,7 +86,8 @@ def runCode(sub):
             res = "tle"
         results.append(res)
 
-        outputs[-1] = outputs[-1] if len(outputs[-1]) <= MAX_OUTPUT_LENGTH else outputs[-1][:MAX_OUTPUT_LENGTH] # + "\n... additional data not displayed ..."
+        # truncate the output if it is too long
+        outputs[-1] = outputs[-1] if len(outputs[-1]) <= MAX_OUTPUT_LENGTH else outputs[-1][:MAX_OUTPUT_LENGTH]
 
         # Make result the first incorrect result
         if res != "ok" and result == "ok":

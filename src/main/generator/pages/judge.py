@@ -57,9 +57,10 @@ class TestCaseData(UIElement):
     def __init__(self, x, sub):
         num, input, output, error, answer = x
 
-# truncate the data
+        # truncate the output and answer if they are too long
         output = output if len(output) <= MAX_OUTPUT_DISPLAY_LENGTH else output[:MAX_OUTPUT_DISPLAY_LENGTH] + "\n... additional data not displayed ..."
-
+        answer = answer if len(answer) <= MAX_OUTPUT_DISPLAY_LENGTH else answer[:MAX_OUTPUT_DISPLAY_LENGTH] + "\n... additional data not displayed ..."
+        
         self.html = div(id=f"tabs-{sub.id}-{num}", contents=[
             div(cls="row", contents=[
                 div(cls="col-12", contents=[
