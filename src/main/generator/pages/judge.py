@@ -55,25 +55,6 @@ class TestCaseData(UIElement):
     def __init__(self, x, sub):
         num, input, output, error, answer = x
 
-        # create the diff
-        output, answer = output.split("\n"), answer.split("\n")
-        out, ans = "", ""
-        for i in range(min(len(output), len(answer))):
-            if output[i].strip() == answer[i].strip():
-                out += "  " + output[i] + "\n"
-                ans += "  " + answer[i] + "\n"
-            else:
-                out += "- " + output[i] + "\n"
-                ans += "+ " + answer[i] + "\n"
-        if (len(output) < len(answer)):
-            for i in range(len(output), len(answer) - 1, 1):
-                ans += "+ " + answer[i] + "\n"
-                out += " " + "\n"
-        else:
-            for i in range(len(answer), len(output) - 1, 1):
-                out += "- " + output[i] + "\n"
-                ans += " " + "\n"
-
         self.html = div(id=f"tabs-{sub.id}-{num}", contents=[
             div(cls="row", contents=[
                 div(cls="col-12", contents=[
@@ -84,13 +65,21 @@ class TestCaseData(UIElement):
             div(cls="row", contents=[
                 div(cls="col-6", contents=[
                     h.h4("Output"),
-                    h.code(out.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+                    h.code(output.replace(" ", "&nbsp;").replace("\n", "<br/>"), id="output")
                 ]),
                 div(cls="col-6", contents=[
                     h.h4("Correct Answer"),
-                    h.code(ans.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+                    h.code(answer.replace(" ", "&nbsp;").replace("\n", "<br/>"), id="answer")
                 ])
-            ])
+            ]),
+            div(cls="row", contents=[
+                div(cls="col-12", contents=[
+                    h.h4("Output Diff"),
+                    h.code("", id="diff", contents=[
+                        h.script(f"$(\"#diff\").html(diff_output(`{output}`, `{answer}`));") 
+                    ])
+                ])
+            ]),
         ])
 
 class SubmissionCard(UIElement):

@@ -697,3 +697,18 @@ Judging Page
             alert(`New Result: ${verdict_name[data]}`);
         });
     }
+
+    function diff_output(output, answer) {
+        diff_string = ""
+        d = Diff.diffTrimmedLines(output, answer);
+        d.forEach((part) => {
+            if (part.added) {
+                diff_string += "+ " + part.value + "</br>";
+            } else if (part.removed) {
+                diff_string += "- " + part.value + "</br>";
+            } else {
+                diff_string += "  " + part.value + "</br>";
+            }
+        });
+        return diff_string;
+    }
