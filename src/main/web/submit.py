@@ -6,7 +6,7 @@ import time
 import shutil
 import re
 from uuid import uuid4
-from zipfile import ZipFile
+import json
 
 def addSubmission(probId, lang, code, user, type):
     sub = Submission()
@@ -136,21 +136,12 @@ def rejudge(params, setHeader, user):
 
 def download(params, setHeader, user):
     id = params["id"]
-    setHeader("Content-Disposition", f"attachment; filename=\"{id}.zip\"")
-    setHeader("Content-type", "application/zip")
     submission = Submission.get(id)
     files = [(f"submission.{exts[submission.language]}",  submission.code)]
     for i in range(len(submission.inputs)):
         files.append((f"test{i}.txt", submission.inputs[i]))
-    shutil.rmtree(f"/tmp/{submission.id}", ignore_errors=True)
-    # create the zip and send it
-    os.mkdir(f"/tmp/{id}")
-    with ZipFile(f"/tmp/{id}/submission.zip", "w") as z:
-        for file in files:
-            with open(f"/tmp/{id}/{file[0]}", "w+b") as f:
-                f.write(file[1].encode("utf-8"))
-            z.write(f"/tmp/{id}/{file[0]}")
-    return "" # readFile(f"/tmp/{id}/submission.zip")
+    # send the json data
+    return json.dumps(files)
 
 register.post("/submit", "loggedin", submit)
 register.post("/changeResult", "admin", changeResult)
