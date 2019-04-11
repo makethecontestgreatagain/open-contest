@@ -6,7 +6,7 @@ from code.generator.lib.page import *
 import logging
 from datetime import datetime
 
-MAX_OUTPUT_DISPLAY_LENGTH = 5
+MAX_OUTPUT_DISPLAY_LENGTH = 5000
 
 class ProblemTab(UIElement):
     def __init__(self, x):

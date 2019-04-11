@@ -7,7 +7,7 @@ import shutil
 import re
 from uuid import uuid4
 
-MAX_OUTPUT_LENGTH = 10
+MAX_OUTPUT_LENGTH = 10000000
 
 def addSubmission(probId, lang, code, user, type):
     sub = Submission()
