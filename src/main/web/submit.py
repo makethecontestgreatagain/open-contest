@@ -7,6 +7,9 @@ import shutil
 import re
 from uuid import uuid4
 
+MAX_OUTPUT_LENGTH = 10
+MAX_OUTPUT_DISPLAY_LENGTH = 5
+
 def addSubmission(probId, lang, code, user, type):
     sub = Submission()
     sub.problem = Problem.get(probId)
@@ -84,10 +87,12 @@ def runCode(sub):
             res = "tle"
         results.append(res)
 
+        outputs[-1] = outputs[-1] if len(outputs[-1]) <= MAX_OUTPUT_LENGTH else outputs[-1][:MAX_OUTPUT_LENGTH] # + "\n... additional data not displayed ..."
+
         # Make result the first incorrect result
         if res != "ok" and result == "ok":
             result = res
-
+        
     sub.result = result
     if readFile(f"/tmp/{sub.id}/result.txt") == "compile_error\n":
         sub.results = "compile_error"
@@ -96,6 +101,7 @@ def runCode(sub):
         shutil.rmtree(f"/tmp/{sub.id}", ignore_errors=True)
         return
 
+        
     sub.results = results
     sub.inputs = inputs
     sub.outputs = outputs
