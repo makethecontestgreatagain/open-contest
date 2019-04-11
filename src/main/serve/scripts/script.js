@@ -697,3 +697,13 @@ Judging Page
             alert(`New Result: ${verdict_name[data]}`);
         });
     }
+
+    function download(id) {
+        $(".download").attr("disabled", true);
+        $(".download").addClass("button-gray");
+
+        $.post("/download", {id: id}, () => {
+            $(".download").attr("disabled", false);
+            $(".download").removeClass("button-gray");
+        });
+    }
