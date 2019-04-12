@@ -15,7 +15,7 @@ def editContest(params, setHeader, user):
     contest.start    = int(params["start"])
     contest.end      = int(params["end"])
     contest.scoreboardOff = int(params["scoreboardOff"])
-    contest.probInfoBlocks = bool(params["probInfoBlocks"])
+    contest.probInfoBlocks = params["probInfoBlocks"] == "True"
     contest.problems = [Problem.get(id) for id in json.loads(params["problems"])]
 
     contest.save()

@@ -18,7 +18,7 @@ class Contest:
             self.start    = int(details["start"])
             self.end      = int(details["end"])
             self.scoreboardOff = int(details.get("scoreboardOff", self.end))
-            self.probInfoBlocks = bool(details["probInfoBlocks"])
+            self.probInfoBlocks = details["probInfoBlocks"] == "True"
             self.problems = [Problem.get(id) for id in details["problems"]]
         else:
             self.id = None
