@@ -697,3 +697,7 @@ Judging Page
             alert(`New Result: ${verdict_name[data]}`);
         });
     }
+
+    function importContestants() {
+        
+    }

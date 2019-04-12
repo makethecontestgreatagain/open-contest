@@ -6,12 +6,14 @@ users = {}
 userNames = {}
 
 class User:
-    def __init__(self, username: str, password: str, type: str, id: str = None):
+    def __init__(self, username: str, password: str, type: str, id: str = None, fullname: str = "", classification: str = ""):
         self.id = id
         if username in userNames:
             self.id = userNames[username].id
         self.username = username
         self.password = password
+        self.classification = classification
+        self.fullname = fullname
         self.type = type
     
     def get(id: str):
@@ -37,7 +39,9 @@ class User:
             "id": self.id,
             "username": self.username,
             "password": self.password,
-            "type": self.type
+            "type": self.type,
+            "fullname": self.fullname,
+            "classification": self.classification
         }
     
     def allJSON():

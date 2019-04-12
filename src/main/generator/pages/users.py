@@ -47,7 +47,8 @@ def getUsers(params, user):
         h2("Users", cls="page-title"),
         div(cls="actions", contents=[
             h.button("+ Create Admin", cls="button button-blue create-admin", onclick="createUser('admin')"),
-            h.button("+ Create Participant", cls="button create-participant", onclick="createUser('participant')")
+            h.button("+ Create Participant", cls="button create-participant", onclick="createUser('participant')"),
+            h.button("+ Import Contestants", cls="button import-contestants", onclick="importContestants()")
         ]),
         div(cls="user-cards", contents=users)
     )
