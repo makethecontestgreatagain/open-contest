@@ -5,7 +5,7 @@ import logging
 from code.util import register
 import time
 
-def leaderboard(params, user):
+def detailedReport(params, user):
     contest = Contest.getCurrent() or Contest.getPast()
     if not contest:
         return Page(
@@ -36,15 +36,18 @@ def leaderboard(params, user):
     for user in subs:
         usersubs = subs[user]
         scor = score(usersubs, start, problemSummary)
-
+        atempts = []
+        for i in getDetails(usersubs, contest):
+            atempts.append(i)
         scores.append((
             User.get(user).username,
+            User.get(user).id,
             scor[0],
             scor[1],
             scor[2],
-            len(usersubs)
+            atempts
         ))
-    scores = sorted(scores, key=lambda score: score[1] * 1000000000 + score[2] * 10000000 - score[3], reverse=True)
+    scores = sorted(scores, key=lambda score: score[2] * 1000000000 + score[3] * 10000000 - score[4], reverse=True)
     
     ranks = [i + 1 for i in range(len(scores))]
     for i in range(1, len(scores)):
@@ -52,38 +55,63 @@ def leaderboard(params, user):
         u2 = scores[i - 1]
         if (u1[1], u1[2], u1[3]) == (u2[1], u2[2], u2[3]):
             ranks[i] = ranks[i - 1]
-    
+
     scoresDisplay = []
-    for (name, solved, samples, points, attempts), rank in zip(scores, ranks):
- 
+    for (name, usrID, solved, samples, points, atempts), rank in zip(scores, ranks):
+        atmpts = []
+        for atmpt in atempts:
+            atmpts.append(h.td(atmpt, cls="center"))
         scoresDisplay.append(h.tr(
             h.td(rank, cls="center"),
-            h.td(name),
-            h.td(attempts, cls="center"),
+            h.td(name) if contest.end <= time.time() * 1000 else '',
+            h.td(usrID, cls="center"),
             h.td(solved, cls="center"),
-            h.td(samples, cls="center"),
-            h.td(points, cls="center")
+            h.td(points, cls="center"),
+            *atmpts
         ))
-
     problemSummaryDisplay = []
+    languageSummaryDisplay = []
+    cnt = 1
     for problem in contest.problems:
+        contestDict = problem.contests[contest.id]
         problemSummaryDisplay.append(h.tr(
+            h.td(cnt),
             h.td(problem.title),
             h.td(problemSummary[problem.id][0], cls="center"),
             h.td(problemSummary[problem.id][1], cls="center")
         ))
+        languageSummaryDisplay.append(h.tr(
+            h.td(cnt),
+            h.td(problem.title),
+            h.td(contestDict["c"], cls="center"),
+            h.td(contestDict["cpp"], cls="center"),
+            h.td(contestDict["cs"], cls="center"),
+            h.td(contestDict["java"], cls="center"),
+            h.td(contestDict["python2"], cls="center"),
+            h.td(contestDict["python3"], cls="center"),
+            h.td(contestDict["ruby"], cls="center"),
+            h.td(contestDict["vb"], cls="center")
+        ))
+        cnt += 1
+
+    prblmHeader = []    
+    cnt = 1
+    for num in contest.problems:
+        prblmHeader.append(
+        h.th(cnt, cls="center"))
+        cnt+=1
 
     return Page(
-        h2("Leaderboard", cls="page-title"),
+        h2("Detailed Report", cls="page-title"),
         h.table(
             h.thead(
                 h.tr(
                     h.th("Rank", cls="center"),
-                    h.th("User"),
-                    h.th("Attempts", cls="center"),
-                    h.th("Problems Solved", cls="center"),
-                    h.th("Sample Cases Solved", cls="center"),
-                    h.th("Penalty Points", cls="center")
+                    h.th("Contestant") if contest.end <= time.time() * 1000 else '',
+                    h.th("ContestantID", cls="center"),
+                    h.th("Correct", cls="center"),
+                    h.th("Penalty", cls="center"),
+                    *prblmHeader
                 )
             ),
             h.tbody(
@@ -94,9 +122,10 @@ def leaderboard(params, user):
         h.table(
             h.thead(
                 h.tr(
-                    h.th("Problem", cls="center"),
+                    h.th("#"),
+                    h.th("Title"),
                     h.th("Attempts", cls="center"),
-                    h.th("Solved", cls="center"),
+                    h.th("Correct", cls="center"),
                 )
             ),
             h.tbody(
@@ -104,17 +133,54 @@ def leaderboard(params, user):
             )
 
         ),
-        h.br(), h.br(), h.br(),
-        div(cls="actions", contents=[
-            h.button("Detailed Report", cls="button correct-log", onclick="window.location='/detailedReport'"),
-            h.button("Correct Log", cls="button correct-log", onclick="window.location='/correctLog'")
-        ])
+        h2("Problem Summary", cls="page-title"),
+        h.table(
+            h.thead(
+                h.tr(
+                    h.th("#"),
+                    h.th("Title"),
+                    h.th("c", cls="center"),
+                    h.th("cpp", cls="center"),
+                    h.th("cs", cls="center"),
+                    h.th("java", cls="center"),
+                    h.th("python2", cls="center"),
+                    h.th("python3", cls="center"),
+                    h.th("ruby", cls="center"),
+                    h.th("vb", cls="center")
+                )
+            ),
+            h.tbody(
+                *languageSummaryDisplay
+            )
+
+        )
     )
 
+def getDetails(submissions: list, contest):
+    details = [0] * len(contest.problems)
+    index = 0
+    for i in contest.problems:
+        count = 0
+        correct = False
+
+        for j in submissions:
+            if j.problem.id == i.id:
+                count+=1
+                if all(i == "ok" for i in j.results) and not correct:
+                    correct = True
+                    s, ms = divmod(j.timestamp, 1000)
+
+        tm = time.strftime('%H:%M', time.gmtime(s)) if count and correct else '--'
+        tm = '' if count == 0 else tm
+        countTxt = '(' + str(count) + ') ' if count else ''
+        txt = countTxt + tm
+        details[index] = txt
+        index += 1
+    return details
+
+
 def score(submissions: list, contestStart, problemSummary) -> tuple:
-    """ Given a list of submissions by a particular user, calculate that user's score.
-        Calculates score in ACM format. """
-    contest = Contest.getCurrent() or Contest.getPast()
+    
     solvedProbs = 0
     sampleProbs = 0
     penPoints = 0
@@ -164,10 +230,10 @@ def score(submissions: list, contestStart, problemSummary) -> tuple:
             solvedProbs += 1
             penPoints += points
             problemSummary[sub.problem.id][1] += 1
-        elif contest.tieBreaker and sampleSolved:
+        elif sampleSolved:
             sampleProbs += 1
     
     # The user's score is dependent on the number of solved problems and the number of penalty points
     return solvedProbs, sampleProbs, int(penPoints)
 
-register.web("/leaderboard", "loggedin", leaderboard)
+register.web("/detailedReport", "loggedin", detailedReport)

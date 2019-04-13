@@ -20,7 +20,10 @@ class HTMLObject:
     def __str__(self):
         options = ""
         for opt in self.options:
-            options += ' {}="{}"'.format(opt, self.options[opt])
+            if opt != "attr":
+                options += ' {}="{}"'.format(opt, self.options[opt])
+            else:
+                options += ' {}'.format(self.options[opt])
         contents = "".join(map(str, self.contents))
         if self.type in singletons and contents == "":
             return "<{}{}/>".format(self.type, options)
@@ -46,5 +49,4 @@ div   = h.div
 a     = h.a
 h1    = h.h1
 h2    = h.h2
-h3    = h.h3
 p     = h.p
