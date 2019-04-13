@@ -8,6 +8,8 @@ import re
 from uuid import uuid4
 import json
 
+MAX_OUTPUT_LENGTH = 10000000
+
 def addSubmission(probId, lang, code, user, type):
     sub = Submission()
     sub.problem = Problem.get(probId)
@@ -95,10 +97,13 @@ def runCode(sub):
             res = "tle"
         results.append(res)
 
+        # truncate the output if it is too long
+        outputs[-1] = outputs[-1] if len(outputs[-1]) <= MAX_OUTPUT_LENGTH else outputs[-1][:MAX_OUTPUT_LENGTH]
+
         # Make result the first incorrect result
         if res != "ok" and result == "ok":
             result = res
-
+        
     sub.result = result
     if sub.result in ["ok", "runtime_error", "tle"]:
         sub.status = "Judged"
@@ -109,6 +114,7 @@ def runCode(sub):
         shutil.rmtree(f"/tmp/{sub.id}", ignore_errors=True)
         return
 
+        
     sub.results = results
     sub.inputs = inputs
     sub.outputs = outputs
