@@ -79,8 +79,17 @@ def runCode(sub):
         answers.append(sub.problem.testData[i].output)
         
         res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
-        if res == "ok" and strip((answers[-1] or "").rstrip()) != strip((outputs[-1] or "").rstrip()):
-            res = "wrong_answer"
+        stripOutput = strip((outputs[-1] or "").rstrip())
+        stripAnswers = strip((answers[-1] or "").rstrip())
+        extraRE = re.sub(r"\n", r"\n(?:[^\n]*\n)?", stripAnswers) + r".*"
+        incompleteRE = "(?:" + re.sub(r"\n", r"\n)?(", stripAnswers) + ")?"
+        if res == "ok" and stripAnswers != stripOutput:
+            if re.fullmatch(incompleteRE, stripOutput, re.DOTALL) or stripAnswers.startswith(stripOutput):
+                res = "incomplete_output"
+            elif re.fullmatch(extraRE, stripOutput, re.DOTALL):
+                res = "extra_output"
+            else:
+                res = "wrong_answer"
         if res == None:
             res = "tle"
         results.append(res)

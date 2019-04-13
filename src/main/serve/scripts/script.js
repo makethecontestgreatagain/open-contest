@@ -166,8 +166,9 @@ Problem page
         "wrong_answer": "times",
         "tle": "clock",
         "runtime_error": "exclamation-triangle",
+        "extra_output": "times",
+        "incomplete_output": "times",
         "pending": "sync",
-        "incomplete" : "times",
         "reject" : "times",
     };
     var verdict_name = {
@@ -175,9 +176,10 @@ Problem page
         "wrong_answer": "Wrong Answer",
         "tle": "Time Limit Exceeded",
         "runtime_error": "Runtime Error",
+        "extra_output": "Extra Output",
+        "incomplete_output": "Incomplete Output",
+        "reject" : "Rejected",
         "pending": "Pending Review",
-        "incomplete": "Incomplete Output",
-        "reject": "Rejected",
     };
 
     function showResults(sub) {
