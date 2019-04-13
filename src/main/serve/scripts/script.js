@@ -741,6 +741,30 @@ Judging Page
         });
     }
 
+    function download(id) {
+        $(".download").attr("disabled", true);
+        $(".download").addClass("button-gray");
+
+        $.post("/download", {id: id}, (data) => {
+            files = JSON.parse(data);
+
+            // Create the zip file 
+            let zip = new JSZip();
+            files.forEach((file) => {
+                zip.file(file[0], file[1]);
+            });
+
+            zip.generateAsync({type:"blob"}).then((content) => {
+                
+                $(".download").attr("disabled", false);
+                $(".download").removeClass("button-gray");
+
+                saveAs(content, `${id}.zip`);
+
+            });
+        });
+    }
+
     function rejudgeAll(probId) {
         var btn = $(`#rejudgeAll${probId}`);
         btn.attr("disabled", true).addClass("button-gray");

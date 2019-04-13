@@ -6,6 +6,7 @@ import time
 import shutil
 import re
 from uuid import uuid4
+import json
 
 def addSubmission(probId, lang, code, user, type):
     sub = Submission()
@@ -200,6 +201,15 @@ def rejudge(params, setHeader, user):
     runCode(submission)
     return submission.result
 
+def download(params, setHeader, user):
+    id = params["id"]
+    submission = Submission.get(id)
+    files = [(f"submission.{exts[submission.language]}",  submission.code)]
+    for i in range(len(submission.inputs)):
+        files.append((f"test{i}.txt", submission.inputs[i]))
+    # send the json data
+    return json.dumps(files)
+
 def rejudgeAll(params, setHeader, user):
     probId = params["probId"]
     # curTime = params["curTime"]
@@ -216,4 +226,5 @@ def rejudgeAll(params, setHeader, user):
 register.post("/submit", "loggedin", submit)
 register.post("/changeResult", "admin", changeResult)
 register.post("/rejudge", "admin", rejudge)
+register.post("/download", "admin", download)
 register.post("/rejudgeAll", "admin", rejudgeAll)
