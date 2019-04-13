@@ -18,14 +18,22 @@ class Contest:
             self.start    = int(details["start"])
             self.end      = int(details["end"])
             self.scoreboardOff = int(details.get("scoreboardOff", self.end))
+            self.probInfoBlocks = details["probInfoBlocks"] == "True"
             self.problems = [Problem.get(id) for id in details["problems"]]
+            if str(details["tieBreaker"]).lower() == "true":
+                self.tieBreaker = True
+            else:
+                self.tieBreaker = False
+
         else:
             self.id = None
             self.name = None
             self.start = None
             self.end = None
             self.scoreboardOff = None
-            self.problems = None            
+            self.tieBreaker = False          
+            self.probInfoBlocks = True
+            self.problems = None
 
     def get(id: str):
         with lock.gen_rlock():
@@ -40,6 +48,8 @@ class Contest:
             "start": self.start,
             "end": self.end,
             "scoreboardOff": self.scoreboardOff,
+            "tieBreaker" : self.tieBreaker,
+            "probInfoBlocks": self.probInfoBlocks,
             "problems": [prob.id for prob in self.problems]
         }
 
@@ -64,6 +74,9 @@ class Contest:
                 "name": self.name,
                 "start": self.start,
                 "end": self.end,
+                "tieBreaker": self.tieBreaker,
+                "scoreboardOff": self.scoreboardOff,
+                "probInfoBlocks": self.probInfoBlocks,
                 "problems": [prob.toJSONSimple() for prob in self.problems]
             }
     

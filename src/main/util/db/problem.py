@@ -2,6 +2,7 @@ from code.util.db import getKey, setKey, listSubKeys, deleteKey
 from uuid import uuid4
 from readerwriterlock import rwlock
 
+
 lock = rwlock.RWLockWrite()
 
 problems = {}
@@ -39,6 +40,7 @@ class Problem:
             self.timeLimit   = int(details["timeLimit"])
             self.sampleData  = [Datum.get(id, i) for i in range(self.samples)]
             self.testData    = [Datum.get(id, i) for i in range(self.tests)]
+            self.contests    = details["contests"]
         else:
             self.id          = None
             self.title       = None
@@ -52,6 +54,7 @@ class Problem:
             self.timeLimit   = 5
             self.sampleData  = []
             self.testData    = []
+            self.contests    = {}
 
     def get(id: str):
         with lock.gen_rlock():
@@ -71,6 +74,7 @@ class Problem:
             "samples":     self.samples,
             "tests":       self.tests,
             "timeLimit":   self.timeLimit,
+            "contests":    self.contests
         }
 
     def save(self):
