@@ -135,6 +135,9 @@ def newProblem(params, user):
                     h.textarea(cls="form-control", name="problem-constraints", id="problem-constraints", contents="Input Constraints")
                 ]),
                 div(cls="form-group col-12", contents=[
+                    h.input(cls="form-control", type="hidden", name="problem-time-limit", id="problem-time-limit", value=5)
+                ]),
+                div(cls="form-group col-12", contents=[
                     h.input(cls="form-control", type="hidden", name="problem-samples", id="problem-samples", value=0)
                 ]),
             ]),
