@@ -54,6 +54,7 @@ def viewProblem(params, user):
             Card("Input Format", formatMD(problem.input), cls="inp"),
             Card("Output Format", formatMD(problem.output), cls="outp"),
             Card("Constraints", formatMD(problem.constraints), cls="constraints"),
+            Card("Time Limit", formatMD(f"{problem.timeLimit} second" + ("" if problem.timeLimit == 1 else "s")), cls="constraints"),
         ]
     
     return Page(

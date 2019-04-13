@@ -17,6 +17,7 @@ def editProblem(params, setHeader, user):
     problem.input       = params["input"]
     problem.output      = params["output"]
     problem.constraints = params["constraints"]
+    problem.timeLimit   = int(params["timeLimit"])
     problem.samples     = int(params["samples"])
 
     testData            = json.loads(params["testData"])
