@@ -25,6 +25,9 @@ class Submission:
             self.errors      = details["errors"]
             self.answers     = details["answers"]
             self.result      = details["result"]
+            self.status      = details["status"]
+            self.checkout    = details["checkout"]
+            self.version     = details["version"]
         else:
             self.id          = None
             self.user        = None
@@ -39,6 +42,9 @@ class Submission:
             self.errors      = []
             self.answers     = []
             self.result      = []
+            self.status      = None
+            self.checkout    = None
+            self.version     = 1
 
     def get(id: str):
         with lock.gen_rlock():
@@ -60,8 +66,17 @@ class Submission:
             "outputs":   self.outputs,
             "errors":    self.errors,
             "answers":   self.answers,
-            "result":    self.result
+            "result":    self.result,
+            "status":    self.status,
+            "checkout":  self.checkout,
+            "version":   self.version,
         }
+
+    def getContestantResult(self):
+        return self.result if self.status == "Judged" else "pending"
+
+    def getContestantIndividualResults(self):
+        return [res if res in ["ok", "runtime_error", "tle"] or self.status == "Judged" else "pending" for res in self.results]
 
     def save(self):
         with lock.gen_wlock():
@@ -106,14 +121,17 @@ class Submission:
                 "outputs":   self.outputs[:self.problem.samples],
                 "errors":    self.errors[:self.problem.samples],
                 "answers":   self.answers[:self.problem.samples],
-                "result":    self.result
+                "result":    self.result,
+                "status":    self.status,
+                "checkout":  self.checkout,
+                "version":   self.version,
             }
 
     def forEach(callback: callable):
         with lock.gen_rlock():
             for id in submissions:
                 callback(submissions[id])
-    
+
     def onSave(callback: callable):
         Submission.saveCallbacks.append(callback)
     
