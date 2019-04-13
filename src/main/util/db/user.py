@@ -56,6 +56,7 @@ class User:
 
 usrs = getKey("/users.json") or []
 for usr in usrs:
+    print(usrs)
     user = User(usr["username"], usr["password"], usr["type"], usr["id"])
     users[usr["id"]] = user
     userNames[usr["username"]] = user
