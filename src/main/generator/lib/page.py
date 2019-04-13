@@ -93,22 +93,20 @@ class Card(UIElement):
         elif reply:
             deleteLink = div("Reply", cls="delete-link", onclick=reply)
         result = ''
-        if(user != None and problemId != None):
+        if user != None and problemId != None:
             icon = ''
             tmstmp = 0
             result = ''
             for i in Submission.all():
-                if(user.isAdmin()):
+                if user.isAdmin():
                     break
                 if i.problem != None:
-                    if i.problem.id == problemId and i.user.id == user.id and "ok" == i.result and tmstmp < i.timestamp:
+                    if i.problem.id == problemId and i.user.id == user.id and "ok" == i.result:
                         icon = "check"
                         tmstmp = i.timestamp
-                    elif i.problem.id == problemId and i.user.id == user.id and "pending" != i.result and tmstmp < i.timestamp:
+                        break
+                    elif i.problem.id == problemId and i.user.id == user.id and "pending" != i.result:
                         icon = "times"
-                        tmstmp = i.timestamp
-                    elif i.problem.id == problemId and i.user.id == user.id and "pending" == i.result and tmstmp < i.timestamp:
-                        icon = ''
                         tmstmp = i.timestamp
             if icon != '':
                 result = f'<i class="fa fa-{icon}"></i> '
