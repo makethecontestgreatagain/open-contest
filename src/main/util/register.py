@@ -80,7 +80,7 @@ def serveHTML(cookie, url):
         exc = traceback.format_exc()
         logging.error(exc)
         statusCode = 500
-        response = "Internal error" 
+        response = "Internal error"
     return statusCode, headers, response
 
 def serveStatic(path):

@@ -16,6 +16,7 @@ def addSubmission(probId, lang, code, user, type):
     sub.user = user
     sub.timestamp = time.time() * 1000
     sub.type = type
+    sub.status = "Review"
     if type == "submit":
         sub.save()
     else:
@@ -89,6 +90,8 @@ def runCode(sub):
             result = res
 
     sub.result = result
+    if sub.result in ["ok", "runtime_error", "tle"]:
+        sub.status = "Judged"
     if readFile(f"/tmp/{sub.id}/result.txt") == "compile_error\n":
         sub.results = "compile_error"
         sub.delete()
@@ -134,9 +137,14 @@ def submit(params, setHeader, user):
     type   = params["type"]
     submission = addSubmission(probId, lang, code, user, type)
     runCode(submission)
-    return submission.toJSON()
+    response = submission.toJSON()
+    if submission.type != "test":
+        response["result"] = submission.getContestantResult()
+        response["results"] = submission.getContestantIndividualResults()
+    return response
 
 def changeResult(params, setHeader, user):
+    version = int(params["version"])
     id = params["id"]
     sub = Submission.get(id)
     contestDict = sub.problem.contests[Contest.getCurrent().id]
@@ -166,7 +174,12 @@ def changeResult(params, setHeader, user):
             contestDict['vb'] += scoreChange
     if not sub:
         return "Error: incorrect id"
+    elif sub.version != version:
+        return "The submission has been changed by another judge since you loaded it. Please reload the sumbission to modify it."
     sub.result = params["result"]
+    sub.status = params["status"]
+    sub.version += 1
+    sub.checkout = None
     sub.save()
     return "ok"
 
