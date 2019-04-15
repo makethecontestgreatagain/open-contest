@@ -201,7 +201,7 @@ Problem page
 
                 var input = sub.inputs[i];
                 var output = sub.outputs[i];
-                var error = sub.errors[i];
+                var error = sub.errors[i] || "";
                 var answer = sub.answers[i];
                 var errorStr = `<div class="col-12">
                     <h4>Stderr Output</h4>

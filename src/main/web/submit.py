@@ -98,6 +98,8 @@ def runCode(sub):
         results.append(res)
 
         # truncate the output if it is too long
+        if outputs[-1] is None:
+            outputs[-1] = ""
         outputs[-1] = outputs[-1] if len(outputs[-1]) <= MAX_OUTPUT_LENGTH else outputs[-1][:MAX_OUTPUT_LENGTH]
 
         # Make result the first incorrect result
