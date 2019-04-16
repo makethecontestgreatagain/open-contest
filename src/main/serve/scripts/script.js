@@ -167,8 +167,6 @@ Problem page
         "tle": "clock",
         "runtime_error": "exclamation-triangle",
         "pending": "sync",
-        "incomplete" : "times",
-        "reject" : "times",
     };
     var verdict_name = {
         "ok": "Accepted",
@@ -176,8 +174,6 @@ Problem page
         "tle": "Time Limit Exceeded",
         "runtime_error": "Runtime Error",
         "pending": "Pending Review",
-        "incomplete": "Incomplete Output",
-        "reject": "Rejected",
     };
 
     function showResults(sub) {
@@ -423,9 +419,7 @@ Contest page
         var startTime = $("#contest-start-time").val();
         var endDate = $("#contest-end-date").val();
         var endTime = $("#contest-end-time").val();
-        var probInfoBlocks = $("#prob-info-blocks").val();
         var scoreboardOffTime = $("#scoreboard-off-time").val();
-        var tieBreaker = $("#scoreboard-tie-breaker").val();
 
         var start = new Date(`${startDate} ${startTime}`).getTime();
         var end = new Date(`${endDate} ${endTime}`).getTime();
@@ -456,7 +450,8 @@ Contest page
         if (newProblem != undefined) {
             problems.push(newProblem);
         }
-        $.post("/editContest", {id: id, name: name, start: start, end: end, probInfoBlocks: probInfoBlocks,  tieBreaker: tieBreaker.toString(), scoreboardOff: endScoreboard, problems: JSON.stringify(problems)}, id => {
+
+        $.post("/editContest", {id: id, name: name, start: start, end: end, scoreboardOff: endScoreboard, problems: JSON.stringify(problems)}, id => {
             if (window.location.pathname == "/contests/new") {
                 window.location = `/contests/${id}`;
             } else {
@@ -611,11 +606,6 @@ General
             var d = new Date(parseInt(timestamp));
             $(span).text(d.toLocaleString());
         });
-        $(".time-format-hour").each((_, span) => {
-            var timestamp = $(span).text();
-            var d = new Date(parseInt(timestamp));
-            $(span).text(d.toLocaleTimeString());
-        });
         await getLanguages();
         $("span.language-format").each((_, span) => {
             var lang = $(span).text();
@@ -711,15 +701,6 @@ Judging Page
         });
     }
 
-    function submissionPopupContestant(id) {
-        $.post(`/contestantSubmission/${id}`, {}, data => {
-            $(".modal-dialog").html(data);
-            $(".result-tabs").tabs();
-            fixFormatting();
-            $(".modal").modal();
-        });
-    }
-
     function rejudge(id) {
         $(".rejudge").attr("disabled", true);
         $(".rejudge").addClass("button-gray");
@@ -728,15 +709,5 @@ Judging Page
             $(".rejudge").attr("disabled", false);
             $(".rejudge").removeClass("button-gray");
             alert(`New Result: ${verdict_name[data]}`);
-        });
-    }
-
-    function rejudgeAll(probId) {
-        var btn = $(`#rejudgeAll${probId}`);
-        btn.attr("disabled", true).addClass("button-gray");
-
-        $.post("/rejudgeAll", {probId: probId}, data => {
-            btn.attr("disabled", false).removeClass("button-gray");
-            alert(`Finished rejudging ${data["name"]}\nRejudged ${data["count"]} submissions`);
         });
     }

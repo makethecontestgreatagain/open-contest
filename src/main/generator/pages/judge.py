@@ -20,9 +20,7 @@ icons = {
     "runtime_error": "exclamation-triangle",
     "presentation_error": "times",
     "extra_output": "times",
-    "pending": "sync",
-    "incomplete" : "times",
-    "reject" : "times"
+    "pending": "sync"
 }
 verdict_name = {
     "ok": "Accepted",
@@ -31,9 +29,7 @@ verdict_name = {
     "runtime_error": "Runtime Error",
     "presentation_error": "Presentation Error",
     "extra_output": "Extra Output",
-    "pending": "Pending Review",
-    "incomplete" : "Incomplete",
-    "reject" : "Reject",
+    "pending": "Pending Review"
 }
 
 def resultOptions(result):
