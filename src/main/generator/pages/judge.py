@@ -1,5 +1,5 @@
 from code.util import register
-from code.util.db import Contest, Problem, Submission, User
+from code.util.db import Contest, Problem, Submission
 from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
 
@@ -32,7 +32,7 @@ verdict_name = {
     "presentation_error": "Presentation Error",
     "extra_output": "Extra Output",
     "incomplete_output": "Incomplete Output",
-    "pending": "Pending Review",
+    "pending": "Pending...",
     "reject" : "Reject",
 }
 
@@ -43,15 +43,6 @@ def resultOptions(result):
             ans.append(h.option(verdict_name[res], value=res, selected="selected"))
         else:
             ans.append(h.option(verdict_name[res], value=res))
-    return ans
-
-def statusOptions(status):
-    ans = []
-    for stat in ["Review", "Judged"]:
-        if status == stat:
-            ans.append(h.option((stat), value=stat, selected="selected"))
-        else:
-            ans.append(h.option((stat), value=stat))
     return ans
 
 class TestCaseTab(UIElement):
@@ -91,11 +82,10 @@ class TestCaseData(UIElement):
         ])
 
 class SubmissionCard(UIElement):
-    def __init__(self, submission: Submission, user, force):
+    def __init__(self, submission: Submission):
         subTime = submission.timestamp
         probName = submission.problem.title
-        cls = "gray" if submission.status == "Review" else "red" if submission.result != "ok" else ""
-        submission.checkout = user.id
+        cls = "red" if submission.result != "ok" else ""
         self.html = div(cls="modal-content", contents=[
             div(cls=f"modal-header {cls}", contents=[
                 h.h5(
@@ -108,21 +98,13 @@ class SubmissionCard(UIElement):
                 </button>"""
             ]),
             div(cls="modal-body", contents=[
-                h.input(type="hidden", id="version", value=f"{submission.version}"),
                 h.strong("Language: <span class='language-format'>{}</span>".format(submission.language)),
                 h.br(),
                 h.strong("Result: ",
-                    h.select(cls=f"result-choice {submission.id}", contents=[
+                    h.select(cls=f"result-choice {submission.id}", onchange=f"changeSubmissionResult('{submission.id}')", contents=[
                         *resultOptions(submission.result)
                     ])
                 ),
-                h.strong("&emsp;Status: ",
-                    h.select(cls=f"status-choice {submission.id}", contents=[
-                        *statusOptions(submission.status)
-                    ])
-                ),
-                h.span("&emsp;"),
-                h.button("Save", type="button", onclick=f"changeSubmissionResult('{submission.id}', '{submission.version}')", cls="btn btn-primary"),
                 h.br(),
                 h.br(),
                 h.button("Rejudge", type="button", onclick=f"rejudge('{submission.id}')", cls="btn btn-primary rejudge"),
@@ -145,8 +127,7 @@ class ProblemContent(UIElement):
 
 class SubmissionRow(UIElement):
     def __init__(self, sub):
-        checkoutUser = User.get(sub.checkout)
-        self.tr = h.tr(
+        self.html = h.tr(
             h.td(sub.user.username),
             h.td(sub.problem.title),
             h.td(cls='time-format', data_timestamp=sub.timestamp, contents=sub.timestamp),
@@ -155,11 +136,8 @@ class SubmissionRow(UIElement):
                 h.i("&nbsp;", cls=f"fa fa-{icons[sub.result]}"),
                 h.span(verdict_name[sub.result])
             ),
-            h.td(sub.status),
-            h.td(checkoutUser.username if checkoutUser is not None else "None"),
-            onclick=f"submissionPopup('{sub.id}', false)"
+            onclick=f"submissionPopup('{sub.id}')"
         )
-        self.html = self.tr
 
 class SubmissionTable(UIElement):
     def __init__(self, contest):
@@ -171,9 +149,7 @@ class SubmissionTable(UIElement):
                     h.th("Problem"),
                     h.th("Time"),
                     h.th("Language"),
-                    h.th("Result"),
-                    h.th("Status"),
-                    h.th("Checkout"),
+                    h.th("Result")
                 )
             ),
             h.tbody(
@@ -191,8 +167,8 @@ def judge(params, user):
         )
     
     return Page(
-        h2("Judge Submissions", cls="page-title judge-width"),
-        div(id="judge-table", cls="judge-width", contents=[
+        h2("Judge Submissions", cls="page-title"),
+        div(id="judge-table", contents=[
             SubmissionTable(cont)
         ]),
         div(cls="modal", tabindex="-1", role="dialog", contents=[
@@ -203,19 +179,7 @@ def judge(params, user):
     )
 
 def judge_submission(params, user):
-    submission = Submission.get(params[0])
-    force = params[1] == "force"
-    if submission.checkout is not None and not force:
-        return f"CONFLICT:{User.get(submission.checkout).username}"
-    return SubmissionCard(submission, user, force)
+    return SubmissionCard(Submission.get(params[0]))
 
-def judge_submission_close(params, setHeader, user):
-    submission = Submission.get(params["id"])
-    if submission.version == int(params["version"]):
-        submission.checkout = None
-        submission.save()
-    return "ok"
-
-register.web("/judgeSubmission/([a-zA-Z0-9-]*)(?:/(force))?", "admin", judge_submission)
-register.post("/judgeSubmissionClose", "admin", judge_submission_close)
+register.web("/judgeSubmission/([a-zA-Z0-9-]*)", "admin", judge_submission)
 register.web("/judge", "admin", judge)
